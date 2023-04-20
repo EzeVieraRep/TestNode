@@ -4,9 +4,7 @@ import axios from 'axios';
 
 function App() {
 
-const [archivoPDF, setArchivoPDF] = useState({
-  file: ''
-})
+const [archivoPDF, setArchivoPDF] = useState('')
 
 
 
@@ -29,7 +27,7 @@ const handleChange = (e) => {
 
   return (
     <div className="App">
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} t>
       <input type="file" name="file" onChange={handleChange} />
       <input type="submit" value="Subir" />
       </form>
