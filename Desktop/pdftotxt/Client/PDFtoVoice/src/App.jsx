@@ -1,12 +1,19 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import axios from 'axios';
 
 
 function App() {
 
+const visortexto = useRef()
 const [archivoPDF, setArchivoPDF] = useState('')
 
+const synth = window.speechSynthesis;
 
+function convertiravoz(param) {
+  const utterThis = new SpeechSynthesisUtterance(param);
+  utterThis.pitch = 0.2;
+  synth.speak(utterThis)
+}
 
 const handleSubmit = (e) => {
   e.preventDefault()
@@ -14,23 +21,26 @@ const handleSubmit = (e) => {
 const formdata = new FormData()
 formdata.append('Archivo', archivoPDF)
 
-axios.post("http://localhost:3000/upload", formdata, { headers: {'Content-Type': 'multipart/form-data',}
-        }).then(res => {
-            console.log(res)
-        })
+fetch('http://localhost:3000/upload', {
+  method: 'POST',
+  body: formdata,
+}).then(res => res.json())
+.catch(error => console.error('Error:', error))
+.then(response => visortexto.current.value = response);
 
 }
 
 const handleChange = (e) => {
-  setArchivoPDF({file: e.target.files[0]})
+  setArchivoPDF(e.target.files[0])
   }
 
   return (
     <div className="App">
-      <form onSubmit={handleSubmit} t>
+      <form onSubmit={handleSubmit}>
       <input type="file" name="file" onChange={handleChange} />
       <input type="submit" value="Subir" />
       </form>
+      <textarea name='visordata' ref={visortexto}></textarea>
       </div>
 
 

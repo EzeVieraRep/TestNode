@@ -1,20 +1,22 @@
 const express = require('express')
 const cors = require('cors')
+var reader = require('any-text');
 const bodyParser= require('body-parser')
 const multer = require('multer');
+const path = require('path')
 
 const app = express()
 const port = 3000
 
 // SET STORAGE
 var storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads')
-  },
+  destination: path.join(__dirname, '../uploads'),
   filename: function (req, file, cb) {
-    cb(null, file.fieldname + '-' + Date.now())
+    cb(null, file.originalname)
   }
 })
+
+
 var upload = multer({ storage: storage })
 
 app.use(bodyParser.urlencoded({extended: true}))
@@ -33,7 +35,16 @@ app.post('/upload', upload.single('Archivo'), (req, res, next) => {
     error.httpStatusCode = 400
     return next(error)
   }
-    res.send(file)
+
+  reader.getText(`../uploads/${file.originalname}`)
+  .then(function (data) {
+    res.send(JSON.stringify(data)); // handle success
+  } )
+  .catch(function (error) {
+    console.log(error); // handle error
+  });
+
+
 })
 
 
